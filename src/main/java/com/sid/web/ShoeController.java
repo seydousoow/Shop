@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sid.entities.Shoe;
+import com.sid.repositories.ShoeRepository;
 import com.sid.service.ShoeService;
 
 @RestController
@@ -17,6 +18,13 @@ public class ShoeController {
 	
 	@Autowired
 	private ShoeService shoeService;
+	@Autowired
+	private ShoeRepository shoeRepo;
+	
+	@GetMapping(value= "/shoes")
+	public List<Shoe> getShoes(){
+		return shoeRepo.findAll();
+	}
 	
 	@GetMapping(value = "/shoes/brand")
 	public List<Shoe> getShoesByBrand(@RequestBody(required = true) String brand){
