@@ -56,8 +56,10 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter{
 		 * and check if the token is not null and if it start with the correct token's prefix
 		 */
 		String token = response.getHeader(SecurityParams.JWT_HEADER_NAME);
-		if (token.isEmpty() || token == null || !token.startsWith(SecurityParams.HEADER_PREFIX))
+		if (token.isEmpty() || token == null || !token.startsWith(SecurityParams.HEADER_PREFIX)) {
 			filterChain.doFilter(request, response);
+			return;
+		}
 		
 		/*
 		 * if the token matches the requisitions build a verifier with the algorith set in during the token's creation,
@@ -65,7 +67,9 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter{
 		 */
 		JWTVerifier verifier = JWT.require(Algorithm.HMAC512(SecurityParams.SECRET)).build();
 		
+		token = token.substring(SecurityParams.HEADER_PREFIX.length());
 		DecodedJWT decoded = verifier.verify(token);
+		
 		String username = decoded.getSubject();
 		List<String> roles = decoded.getClaims().get(SecurityParams.CLAIM_ARRAY_NAME).asList(String.class);
 		
