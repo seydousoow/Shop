@@ -43,7 +43,6 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter{
 		 * Allows other methods (PUT, Delete)
 		 */
 		response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
-
 		if (request.getMethod().equals("OPTIONS")) {
 			response.setStatus(HttpServletResponse.SC_OK);
 		}
