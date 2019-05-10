@@ -8,7 +8,5 @@ public interface ShoeService {
 	
 	List<Shoe> getShoesByBrand(String brand);
 	List<Shoe> getShoesByModel(String model);
-	Shoe updateShoe(Shoe shoe);
-	void deleteShoe(String idShoe);
-	
+
 }

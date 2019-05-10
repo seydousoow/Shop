@@ -11,7 +11,7 @@ import com.sid.entities.Shoe;
 @Repository
 public interface ShoeRepository extends MongoRepository<Shoe, String> {
 		
-	@Query("{'brand' : ?0 }")
+	@Query("{'brand': ?0 }")
 	List<Shoe> getShoesByBrand(String brand);
 	
 	@Query("{'model': ?0}")

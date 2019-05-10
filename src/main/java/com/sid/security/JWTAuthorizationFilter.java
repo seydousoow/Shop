@@ -43,11 +43,13 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter{
 		 * Allows other methods (PUT, Delete)
 		 */
 		response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
-		
-		if(request.getMethod().equals("OPTIONS"))
+
+		if (request.getMethod().equals("OPTIONS")) {
 			response.setStatus(HttpServletResponse.SC_OK);
+		}
 		else 
 			JWTFilter(request, response, filterChain);
+
 	}
 		
 	private void JWTFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
@@ -55,7 +57,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter{
 		 * Get the token from the response's header
 		 * and check if the token is not null and if it start with the correct token's prefix
 		 */
-		String token = response.getHeader(SecurityParams.JWT_HEADER_NAME);
+		String token = request.getHeader(SecurityParams.JWT_HEADER_NAME);
 		if (token.isEmpty() || token == null || !token.startsWith(SecurityParams.HEADER_PREFIX)) {
 			filterChain.doFilter(request, response);
 			return;
