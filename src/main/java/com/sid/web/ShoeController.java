@@ -63,8 +63,8 @@ public class ShoeController {
 	}
 
 	@GetMapping(value = "/upload")
-	public File getFile(@RequestParam("name") String name) {
+	public String getFile(@RequestParam("name") String name) {
 		File f = new File("images/" + name);
-		return f;
+		return encodeFileToBase64Binary(f);
 	}
 }

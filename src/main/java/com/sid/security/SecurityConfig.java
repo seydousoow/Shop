@@ -24,7 +24,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
 		http.authorizeRequests().anyRequest().authenticated();
 
-		http.authorizeRequests().antMatchers("/images/**").permitAll();
 		http.addFilterBefore(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 
