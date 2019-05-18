@@ -25,19 +25,4 @@ public class ShoeController {
 		return shoeService.getShoesByModel(model);
 	}
 
-//	private static String encodeFileToBase64Binary(File file){
-//		String encodedfile = null;
-//		try {
-//			FileInputStream fileInputStreamReader = new FileInputStream(file);
-//			byte[] bytes = new byte[(int)file.length()];
-//			fileInputStreamReader.read(bytes);
-//			encodedfile = new String(Base64.encodeBase64(bytes), Charset.forName("UTF-8"));
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		return encodedfile;
-//	}
-//
 }

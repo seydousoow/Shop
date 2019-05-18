@@ -19,13 +19,11 @@ public class Shoe {
     @Indexed( direction = IndexDirection.DESCENDING)
     private LocalDateTime addedAt;
     private String category;
-    private String code;
-    private String name;
     private String brand;
     private String model;
-    private double boughtPrice;
+    private double buyingPrice;
     private double sellingPrice;
-    private String imageUrl;
+    private String image;
     private String description;
     @Indexed(direction = IndexDirection.ASCENDING)
     private Collection<Size> listSize = new ArrayList<>();
