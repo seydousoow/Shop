@@ -14,7 +14,7 @@ public class ShoeController {
 
 	@Autowired
 	private ShoeService shoeService;
-	
+
 	@GetMapping(value = "/shoes/brand")
 	public List<Shoe> getShoesByBrand(@RequestBody String brand){
 		return shoeService.getShoesByBrand(brand);
