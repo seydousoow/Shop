@@ -20,7 +20,7 @@ public class ShoeController {
 	@Autowired
 	private ShoeService shoeService;
 
-	@GetMapping(params = {"page", "size", "sort", "direction"}, value = "/shoes")
+	@GetMapping(value = "/shoes")
 	public Page<Shoe> getShoes(@RequestParam(value = "page", defaultValue = "0", required = false) int page,
 							   @RequestParam(value = "size", defaultValue = "28", required = false) int size,
 							   @RequestParam(value = "sort", defaultValue = "addedAt", required = false) String sortBy,
