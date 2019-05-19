@@ -26,9 +26,9 @@ public class ShoeController {
 							   @RequestParam(value = "sort", defaultValue = "addedAt", required = false) String sortBy,
 							   @RequestParam(value = "direction", defaultValue = "ASC", required = false) String direction) {
 		Sort sort = null;
-		if( direction.isEmpty() || direction.equals("ASC"))
+		if( direction.isEmpty() || direction.toUpperCase().equals("ASC"))
 			sort = Sort.by(Sort.Direction.ASC, sortBy);
-		if (direction.equals("DESC"))
+		if (direction.toUpperCase().equals("DESC"))
 			sort = Sort.by(Sort.Direction.DESC, sortBy);
 
 		Pageable pageable = PageRequest.of(page, size, sort);
