@@ -24,6 +24,11 @@ public class ShoeServiceImpl implements ShoeService {
 	}
 
 	@Override
+	public Shoe getShoe(String id) {
+		return shoeRepository.findById(id).get();
+	}
+
+	@Override
 	public List<Shoe> getShoesByBrand (String brand) {
 		return shoeRepository.getShoesByBrand(brand);
 	}

@@ -33,6 +33,9 @@ public class ShoeController {
 		return shoeService.getShoes(pageable);
 	}
 
+	@GetMapping(value = "/shoes/{id}")
+	public Shoe getShoe(@PathVariable("id") String id) { return shoeService.getShoe(id);}
+
 	@GetMapping(value = "/shoes/brand")
 	public List<Shoe> getShoesByBrand(@RequestBody String brand){
 		return shoeService.getShoesByBrand(brand);
