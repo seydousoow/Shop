@@ -11,5 +11,7 @@ public interface ShoeService {
 	Page<Shoe> getShoes(Pageable pageable);
 	List<Shoe> getShoesByBrand(String brand);
 	List<Shoe> getShoesByModel(String model);
+	Shoe addShoe(Shoe shoe);
+	void deleteShoe(String id);
 
 }

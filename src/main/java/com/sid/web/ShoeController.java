@@ -7,10 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -45,5 +42,14 @@ public class ShoeController {
 	public List<Shoe> getShoesByModel(@RequestBody String model){
 		return shoeService.getShoesByModel(model);
 	}
+
+	@PostMapping("/shoes")
+	public Shoe addShoe(@RequestBody Shoe shoe) { return shoeService.addShoe(shoe);}
+
+	@PutMapping("/shoes")
+	public Shoe updateShoe(@RequestBody Shoe shoe) { return shoeService.addShoe(shoe);}
+
+	@DeleteMapping("/shoes/{id}")
+	public void deleteShoe(@PathVariable("id") String id) { shoeService.deleteShoe(id);}
 
 }

@@ -33,4 +33,15 @@ public class ShoeServiceImpl implements ShoeService {
 		return shoeRepository.getShoesByModel(model);
 	}
 
+	@Override
+	public Shoe addShoe(Shoe shoe) {
+		return shoeRepository.save(shoe);
+	}
+
+	@Override
+	public void deleteShoe(String id) {
+		shoeRepository.deleteById(id);
+	}
+
+
 }
