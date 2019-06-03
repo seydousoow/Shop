@@ -13,6 +13,7 @@ public interface ShoeService {
 	List<Shoe> getShoesByBrand(String brand);
 	List<Shoe> getShoesByModel(String model);
 	Shoe addShoe(Shoe shoe);
+	Shoe updateShoe(Shoe shoe);
 	void deleteShoe(String id);
 
 }

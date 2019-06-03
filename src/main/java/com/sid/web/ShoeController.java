@@ -9,25 +9,26 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-@CrossOrigin("*")
+
 @RestController
 public class ShoeController {
 
-	@Autowired
-	private ShoeService shoeService;
+	private final ShoeService shoeService;
+
+	public ShoeController(ShoeService shoeService) {
+		this.shoeService = shoeService;
+	}
 
 	@GetMapping(value = "/shoes")
-	public Page<Shoe> getShoes(@RequestParam(value = "page", defaultValue = "0", required = false) int page,
-							   @RequestParam(value = "size", defaultValue = "28", required = false) int size,
-							   @RequestParam(value = "sort", defaultValue = "addedAt", required = false) String sortBy,
-							   @RequestParam(value = "direction", defaultValue = "ASC", required = false) String direction) {
-		Sort sort = null;
-		if( direction.isEmpty() || direction.toUpperCase().equals("ASC"))
-			sort = Sort.by(Sort.Direction.ASC, sortBy);
-		if (direction.toUpperCase().equals("DESC"))
-			sort = Sort.by(Sort.Direction.DESC, sortBy);
-
+	public Page<Shoe> getShoes(@RequestParam(value = "page", defaultValue = "0") int page,
+							   @RequestParam(value = "size", defaultValue = "28") int size,
+							   @RequestParam(value = "sort", defaultValue = "addedAt") String sortBy,
+							   @RequestParam(value = "direction", defaultValue = "ASC") String direction) {
+		Sort.Direction dir = Sort.Direction.fromString(direction.toUpperCase());
+		Sort sort = Sort.by(dir, sortBy);
 		Pageable pageable = PageRequest.of(page, size, sort);
 
 		return shoeService.getShoes(pageable);
@@ -37,20 +38,24 @@ public class ShoeController {
 	public Shoe getShoe(@PathVariable("id") String id) { return shoeService.getShoe(id);}
 
 	@GetMapping(value = "/shoes/brand")
-	public List<Shoe> getShoesByBrand(@RequestBody String brand){
-		return shoeService.getShoesByBrand(brand);
+	public Collection<Shoe> getShoesByBrand(@RequestBody List<String> brands){
+		Collection<Shoe> shoes = new ArrayList<>();
+		brands.forEach(brand -> shoes.addAll(shoeService.getShoesByBrand(brand)));
+		return shoes;
 	}
 	
 	@GetMapping(value = "/shoes/model")
-	public List<Shoe> getShoesByModel(@RequestBody String model){
-		return shoeService.getShoesByModel(model);
+	public Collection<Shoe> getShoesByModel(@RequestBody List<String> models){
+		Collection<Shoe> shoes = new ArrayList<>();
+		models.forEach(model -> shoes.addAll(shoeService.getShoesByModel(model)));
+		return shoes;
 	}
 
 	@PostMapping("/shoes")
 	public Shoe addShoe(@RequestBody Shoe shoe) { return shoeService.addShoe(shoe);}
 
 	@PutMapping("/shoes")
-	public Shoe updateShoe(@RequestBody Shoe shoe) { return shoeService.addShoe(shoe);}
+	public Shoe updateShoe(@RequestBody Shoe shoe) { return shoeService.updateShoe(shoe);}
 
 	@DeleteMapping("/shoes/{id}")
 	public void deleteShoe(@PathVariable("id") String id) { shoeService.deleteShoe(id);}

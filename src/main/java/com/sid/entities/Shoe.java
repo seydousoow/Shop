@@ -1,6 +1,7 @@
 package com.sid.entities;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -17,18 +18,16 @@ public class Shoe {
     @Id
     private String idShoe;
     @Indexed( direction = IndexDirection.DESCENDING)
-    private LocalDateTime addedAt;
-    private String category;
+    private LocalDateTime addedAt = LocalDateTime.now(ZoneId.of("UTC"));
+
+    @Indexed(unique = true)
+    private String code;
     private String brand;
     private String model;
     private double buyingPrice;
     private double sellingPrice;
     private String image;
     private String description;
-    @Indexed(direction = IndexDirection.ASCENDING)
+
     private Collection<Size> listSize = new ArrayList<>();
-    
-    public Shoe() {
-    	this.addedAt = LocalDateTime.now();
-    }
 }
