@@ -15,16 +15,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	protected void configure (HttpSecurity http) throws Exception {
 		/*
 		 * 1- Disable csrf
-		 * 2- Disactivate sessions
+		 * 2- Deactivate sessions
 		 * 3- Require authentication on every request
 		 * 4- Add Filter
 		 */
-		http.csrf().disable();
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-		http.authorizeRequests().anyRequest().permitAll();
-
-// 		http.addFilterBefore(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+		http.csrf().disable()
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				.and()
+				.authorizeRequests().anyRequest().authenticated()
+				.and()
+				.addFilterBefore(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 
 }
