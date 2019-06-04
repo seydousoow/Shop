@@ -12,10 +12,11 @@
     <artifactId>shop</artifactId>
     <version>1.0</version>
     <name>shop</name>
-    <description>Astou's shop management</description>
+    <description>shop management</description>
 
     <properties>
         <java.version>11</java.version>
+
     </properties>
 
     <dependencies>
@@ -81,7 +82,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
-        <finalName>Shop management</finalName>
+        <finalName>ShopManagement</finalName>
     </build>
 
 </project>
