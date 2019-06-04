@@ -51,7 +51,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter{
 		String encodedString = new String(Base64.getEncoder().encode(SecurityParameters.SECRET.getBytes()));
 		Claims claims = Jwts.parser()
 				.setSigningKey(encodedString)
-				.parseClaimsJws(token.substring(0, SecurityParameters.TOKEN_PREFIX.length()))
+				.parseClaimsJws(token.substring(SecurityParameters.TOKEN_PREFIX.length()))
 				.getBody();
 
 		String username = claims.getSubject();
