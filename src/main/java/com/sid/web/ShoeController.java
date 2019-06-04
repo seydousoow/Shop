@@ -1,5 +1,6 @@
 package com.sid.web;
 
+import com.sid.entities.ItemsImages;
 import com.sid.entities.Shoe;
 import com.sid.service.ShoeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,11 @@ public class ShoeController {
 		Collection<Shoe> shoes = new ArrayList<>();
 		models.forEach(model -> shoes.addAll(shoeService.getShoesByModel(model)));
 		return shoes;
+	}
+
+	@GetMapping(value = "/shoes/image/{code}")
+	public ItemsImages getImages(@PathVariable String code) {
+		return shoeService.getImage(code);
 	}
 
 	@PostMapping("/shoes")

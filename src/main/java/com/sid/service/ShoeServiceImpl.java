@@ -3,6 +3,8 @@ package com.sid.service;
 import java.util.List;
 import java.util.Random;
 
+import com.sid.entities.ItemsImages;
+import com.sid.repositories.ImageRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,9 +20,11 @@ import com.sid.repositories.ShoeRepository;
 public class ShoeServiceImpl implements ShoeService {
 	
 	private final ShoeRepository shoeRepository;
+	private final ImageRepository imageRepository;
 
-	public ShoeServiceImpl(ShoeRepository shoeRepository) {
+	public ShoeServiceImpl(ShoeRepository shoeRepository, ImageRepository imageRepository) {
 		this.shoeRepository = shoeRepository;
+		this.imageRepository = imageRepository;
 	}
 
 	@Override
@@ -50,18 +54,47 @@ public class ShoeServiceImpl implements ShoeService {
 			shoeCode = RandomStringUtils.randomAlphanumeric(10);
 		} while(shoeRepository.findByCodeExists(shoeCode));
 		shoe.setCode(shoeCode);
+
+		imageRepository.save(new ItemsImages(null, shoe.getCode(), shoe.getImage()));
+
 		return shoeRepository.save(shoe);
 	}
 
 	@Override
 	public Shoe updateShoe(Shoe shoe){
-		shoe.setIdShoe(shoeRepository.findByCodeEquals(shoe.getCode()).getIdShoe());
+		if(!shoeRepository.existsById(shoe.getIdShoe()))
+			throw new RuntimeException("This article doesn't exist!");
+
+		if(shoe.getIdShoe() == null)
+			shoe.setIdShoe(shoeRepository.findByCodeEquals(shoe.getCode()).getIdShoe());
+
+		updateImage(shoe.getCode(), shoe.getImage());
 		return shoeRepository.save(shoe);
 	}
 
 	@Override
 	public void deleteShoe(String id) {
-		shoeRepository.deleteById(id);
+		if(!shoeRepository.existsById(id))
+			throw new RuntimeException("This article does not exist!");
+
+		Shoe shoe = shoeRepository.findById(id).get();
+		deleteImage(shoe.getCode());
+		shoeRepository.delete(shoe);
+	}
+
+	@Override
+	public ItemsImages getImage(String code) {
+		return imageRepository.findByCodeEquals(code);
+	}
+
+	private void updateImage(String code, String image) {
+		ItemsImages img = imageRepository.findByCodeEquals(code);
+		img.setBase64Image(image);
+		imageRepository.save(img);
+	}
+
+	private void deleteImage(String code) {
+		imageRepository.deleteByCodeEquals(code);
 	}
 
 

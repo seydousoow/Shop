@@ -2,6 +2,7 @@ package com.sid.service;
 
 import java.util.List;
 
+import com.sid.entities.ItemsImages;
 import com.sid.entities.Shoe;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +17,5 @@ public interface ShoeService {
 	Shoe updateShoe(Shoe shoe);
 	void deleteShoe(String id);
 
+	ItemsImages getImage(String code);
 }
