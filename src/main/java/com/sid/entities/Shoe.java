@@ -20,6 +20,7 @@ public class Shoe {
     private String idShoe;
     @Indexed( direction = IndexDirection.DESCENDING)
     private LocalDateTime addedAt = LocalDateTime.now(ZoneId.of("UTC"));
+    private String category;
 
     @Indexed(unique = true)
     private String code;
