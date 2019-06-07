@@ -25,7 +25,7 @@ public class ShoeController {
 
 	@GetMapping(value = "/shoes")
 	public Page<Shoe> getShoes(@RequestParam(value = "page", defaultValue = "0") int page,
-							   @RequestParam(value = "size", defaultValue = "28") int size,
+							   @RequestParam(value = "size", defaultValue = "24") int size,
 							   @RequestParam(value = "sort", defaultValue = "addedAt") String sortBy,
 							   @RequestParam(value = "direction", defaultValue = "ASC") String direction) {
 		Sort.Direction dir = Sort.Direction.fromString(direction.toUpperCase());
