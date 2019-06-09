@@ -52,7 +52,7 @@ public class ShoeServiceImpl implements ShoeService {
 		String shoeCode;
 		do {
 			shoeCode = RandomStringUtils.randomAlphanumeric(10);
-		} while(shoeRepository.findByCodeExists(shoeCode));
+		} while(shoeRepository.findByCodeExists(shoeCode) != null);
 		shoe.setCode(shoeCode);
 
 		imageRepository.save(new ItemsImages(null, shoe.getCode(), shoe.getImage()));

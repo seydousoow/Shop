@@ -14,14 +14,4 @@ public class ShopApplication {
         SpringApplication.run(ShopApplication.class, args);
     }
 
-    @Bean
-    CommandLineRunner run(ShoeRepository shoeRepository){
-        return args -> {
-            shoeRepository.findAll().forEach(shoe -> {
-                shoe.setCategory("Shoe");
-                shoeRepository.save(shoe);
-            });
-        };
-    }
-
 }
