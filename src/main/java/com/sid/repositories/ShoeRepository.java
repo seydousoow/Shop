@@ -11,6 +11,5 @@ import java.util.List;
 public interface ShoeRepository extends MongoRepository<Shoe, String> {
 	List<Shoe> findByBrandEquals(@Param("brand") String brand);
 	List<Shoe> findByModelEquals(@Param("model") String model);
-	Boolean findByCodeExists(@Param("code") String code);
 	Shoe findByCodeEquals(@Param("code") String code);
 }
