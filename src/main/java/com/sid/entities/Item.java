@@ -1,10 +1,8 @@
 package com.sid.entities;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collection;
-
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -12,26 +10,29 @@ import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import lombok.Data;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
-@Document(collection = "Shoes")
+@Document
 @Data
-public class Shoe {
+@AllArgsConstructor
+@NoArgsConstructor
+public class Item {
+
     @Id
-    private String idShoe;
+    private String idItem;
     @Indexed( direction = IndexDirection.DESCENDING)
     private LocalDateTime addedAt = LocalDateTime.now(ZoneId.of("UTC"));
-    private String category;
-
     @Indexed(unique = true)
     private String code = RandomStringUtils.randomAlphanumeric(20);
+
+    private String category;
     private String brand;
-    private String model;
+    private String name;
     private double buyingPrice;
     private double sellingPrice;
+    private String description;
     @Transient
     private String image;
-    private String description;
-
-    private Collection<Size> listSize = new ArrayList<>();
+    private int quantity;
 }

@@ -1,30 +1,26 @@
 package com.sid.service;
 
-import java.util.List;
-import java.util.Random;
-
-import com.sid.entities.ItemsImages;
-import com.sid.repositories.ImageRepository;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.sid.entities.Image;
+import com.sid.entities.Shoe;
+import com.sid.repositories.ShoeRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sid.entities.Shoe;
-import com.sid.repositories.ShoeRepository;
+import java.util.List;
 
 @Service
 @Transactional
 public class ShoeServiceImpl implements ShoeService {
 	
 	private final ShoeRepository shoeRepository;
-	private final ImageRepository imageRepository;
+	private final ImageService imageService;
 
-	public ShoeServiceImpl(ShoeRepository shoeRepository, ImageRepository imageRepository) {
+	public ShoeServiceImpl(ShoeRepository shoeRepository,
+						   ImageService imageService) {
 		this.shoeRepository = shoeRepository;
-		this.imageRepository = imageRepository;
+		this.imageService = imageService;
 	}
 
 	@Override
@@ -38,25 +34,13 @@ public class ShoeServiceImpl implements ShoeService {
 	}
 
 	@Override
-	public List<Shoe> getShoesByBrand (String brand) {
-		return shoeRepository.findByBrandEquals(brand);
-	}
-
-	@Override
-	public List<Shoe> getShoesByModel (String model) {
-		return shoeRepository.findByModelEquals(model);
+	public Page<Shoe> getShoesByBrands(List<String> brands, Pageable pageable) {
+		return shoeRepository.findByBrandIsIn(brands, pageable);
 	}
 
 	@Override
 	public Shoe addShoe(Shoe shoe) {
-		String shoeCode;
-		do {
-			shoeCode = RandomStringUtils.randomAlphanumeric(10);
-		} while(shoeRepository.findByCodeEquals(shoeCode) != null);
-		shoe.setCode(shoeCode);
-
-		imageRepository.save(new ItemsImages(null, shoe.getCode(), shoe.getImage()));
-
+		imageService.save(new Image(null, shoe.getCode(), shoe.getImage()));
 		return shoeRepository.save(shoe);
 	}
 
@@ -68,7 +52,7 @@ public class ShoeServiceImpl implements ShoeService {
 		if(shoe.getIdShoe() == null)
 			shoe.setIdShoe(shoeRepository.findByCodeEquals(shoe.getCode()).getIdShoe());
 
-		updateImage(shoe.getCode(), shoe.getImage());
+		imageService.updateImage(shoe.getCode(), shoe.getImage());
 		return shoeRepository.save(shoe);
 	}
 
@@ -78,24 +62,8 @@ public class ShoeServiceImpl implements ShoeService {
 			throw new RuntimeException("This article does not exist!");
 
 		Shoe shoe = shoeRepository.findById(id).get();
-		deleteImage(shoe.getCode());
+		imageService.deleteImage(shoe.getCode());
 		shoeRepository.delete(shoe);
 	}
-
-	@Override
-	public ItemsImages getImage(String code) {
-		return imageRepository.findByCodeEquals(code);
-	}
-
-	private void updateImage(String code, String image) {
-		ItemsImages img = imageRepository.findByCodeEquals(code);
-		img.setBase64Image(image);
-		imageRepository.save(img);
-	}
-
-	private void deleteImage(String code) {
-		imageRepository.deleteByCodeEquals(code);
-	}
-
 
 }

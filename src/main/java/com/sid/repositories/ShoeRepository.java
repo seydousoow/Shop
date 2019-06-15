@@ -1,15 +1,16 @@
 package com.sid.repositories;
 
 import com.sid.entities.Shoe;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
 
-@Repository
+@RepositoryRestResource
 public interface ShoeRepository extends MongoRepository<Shoe, String> {
-	List<Shoe> findByBrandEquals(@Param("brand") String brand);
-	List<Shoe> findByModelEquals(@Param("model") String model);
+	Page<Shoe> findByBrandIsIn(@Param("brands") List<String> brands, Pageable pageable);
 	Shoe findByCodeEquals(@Param("code") String code);
 }
