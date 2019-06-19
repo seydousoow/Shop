@@ -25,11 +25,18 @@ public class ImageService {
 
     protected void updateImage(String code, String image) {
         Image img = imageRepository.findByCodeEquals(code);
-        img.setBase64Image(image);
+        if (img == null)
+            img = new Image(null, code, image);
+        else
+            img.setBase64Image(image);
         imageRepository.save(img);
     }
 
     protected void deleteImage(String code) {
+        Image image = imageRepository.findByCodeEquals(code);
+
+        if(image == null || image.getBase64Image().length() <= 0)
+            throw new RuntimeException("The code "+code+" is not associated with any image");
         imageRepository.deleteByCodeEquals(code);
     }
 

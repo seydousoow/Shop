@@ -9,5 +9,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 public interface ImageRepository extends MongoRepository<Image, String> {
 
     Image findByCodeEquals(@Param("code") String code);
+    Boolean findByCodeExists(@Param("code") String code);
     void deleteByCodeEquals(@Param("code") String code);
 }

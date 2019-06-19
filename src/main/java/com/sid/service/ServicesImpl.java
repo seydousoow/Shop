@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -34,9 +35,9 @@ public class ServicesImpl implements Services {
     }
 
     @Override
-    public Item getItem(String id) {
-        Item item = itemRepository.findById(id).get();
-        if(item.getCode().isEmpty())
+    public Item getItem(String code) {
+        Item item = itemRepository.findItemByCodeEquals(code);
+        if(item == null)
             throw new RuntimeException("This article doesn't exist!");
         return item;
     }
@@ -61,10 +62,11 @@ public class ServicesImpl implements Services {
 
     @Override
     public void delete(String id) {
-        if(!itemRepository.existsById(id))
+        Optional<Item> optionalItem = itemRepository.findById(id);
+        if(optionalItem.isEmpty())
             throw new RuntimeException("This article does not exist!");
 
-        Item item = itemRepository.findById(id).get();
+        Item item = optionalItem.get();
         imageService.deleteImage(item.getCode());
         itemRepository.delete(item);
     }

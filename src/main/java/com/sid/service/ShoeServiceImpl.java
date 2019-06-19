@@ -51,7 +51,6 @@ public class ShoeServiceImpl implements ShoeService {
 
 		if(shoe.getIdShoe() == null)
 			shoe.setIdShoe(shoeRepository.findByCodeEquals(shoe.getCode()).getIdShoe());
-
 		imageService.updateImage(shoe.getCode(), shoe.getImage());
 		return shoeRepository.save(shoe);
 	}

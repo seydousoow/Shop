@@ -8,8 +8,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
@@ -27,12 +29,14 @@ public class ItemController {
                                @RequestParam(value = "size", defaultValue = "24") int size,
                                @RequestParam(value = "sort", defaultValue = "addedAt") String sortBy,
                                @RequestParam(value = "direction", defaultValue = "ASC") String direction) {
+        category = category.substring(0, 1).toUpperCase() + category.substring(1);
         return services.getItems(category, setPagination(page, size, sortBy, direction));
     }
 
-    @GetMapping(value = "/items/{category}/{id}")
+    @GetMapping(value = "/items/{category}/{code}")
     public Item getItem(@PathVariable String category,
-                        @PathVariable("id") String id) { return services.getItem(id);}
+                        @PathVariable String code) {
+        return services.getItem(code);}
 
     @GetMapping(value = "/items/{category}/brand")
     public Page<Item> getItemsByBrand(@PathVariable String category,
@@ -41,9 +45,15 @@ public class ItemController {
                                       @RequestParam(value = "size", defaultValue = "24") int size,
                                       @RequestParam(value = "sort", defaultValue = "addedAt") String sortBy,
                                       @RequestParam(value = "direction", defaultValue = "DESC") String direction) {
+        category = category.substring(0, 1).toUpperCase() + category.substring(1);
+        List<String> listBrands = new ArrayList<>(Arrays.asList(new String(Base64.getUrlDecoder().decode(brands)).split("%")));
 
-        var listBrands = new AtomicReference<>(Arrays.asList(new String(Base64.getUrlDecoder().decode(brands)).split("%")));
-        return services.getItemsByBrand(category, listBrands.get(), setPagination(page, size, sortBy, direction));
+        Page<Item> pageable = services.getItemsByBrand(category, listBrands, setPagination(page, size, sortBy, direction));
+        if (page >= pageable.getTotalPages()) {
+            page = pageable.getTotalPages() - 1;
+            pageable = services.getItemsByBrand(category, listBrands, setPagination(page, size, sortBy, direction));
+        }
+        return pageable;
     }
 
     @PostMapping("/items")

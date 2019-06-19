@@ -12,6 +12,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 @Document
 @Data
@@ -21,7 +23,7 @@ public class Item {
 
     @Id
     private String idItem;
-    @Indexed( direction = IndexDirection.DESCENDING)
+    @Indexed(direction = IndexDirection.DESCENDING)
     private LocalDateTime addedAt = LocalDateTime.now(ZoneId.of("UTC"));
     @Indexed(unique = true)
     private String code = RandomStringUtils.randomAlphanumeric(20);
@@ -35,4 +37,6 @@ public class Item {
     @Transient
     private String image;
     private int quantity;
+
+    private List<ItemSize> sizes = new ArrayList<>();
 }

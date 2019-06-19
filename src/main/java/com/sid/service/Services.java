@@ -9,7 +9,7 @@ import java.util.List;
 public interface Services {
     Page<Item> getItems(String category, Pageable pageable);
     Page<Item> getItemsByBrand(String category, List<String> brands, Pageable pageable);
-    Item getItem(String id);
+    Item getItem(String code);
     Item add(Item item);
     Item update(Item item);
     void delete(String id);
