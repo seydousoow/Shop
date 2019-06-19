@@ -1,1 +1,0 @@
-web: java -Dserver.port=8081 $JAVA_OPTS -jar target/ShopManagement.jar
