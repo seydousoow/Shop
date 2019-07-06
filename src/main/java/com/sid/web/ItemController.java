@@ -8,8 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 
 @RestController
