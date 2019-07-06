@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ItemSize {
     private String size;
-    private double quantity;
+    private int quantity;
 }

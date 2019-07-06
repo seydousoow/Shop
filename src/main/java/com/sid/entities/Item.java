@@ -30,6 +30,7 @@ public class Item {
 
     private String category;
     private String brand;
+    private String model;
     private String name;
     private double buyingPrice;
     private double sellingPrice;
