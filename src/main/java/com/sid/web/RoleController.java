@@ -2,18 +2,16 @@ package com.sid.web;
 
 import com.sid.entities.AppRole;
 import com.sid.service.CredentialsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/roles")
+@RequiredArgsConstructor
 public class RoleController {
 
     private final CredentialsService credentialsService;
-
-    public RoleController(CredentialsService credentialsService) {
-        this.credentialsService = credentialsService;
-    }
 
     @GetMapping
     public Page<AppRole> getRoles(@RequestParam(name = "page", defaultValue = "0") int page,
@@ -24,8 +22,8 @@ public class RoleController {
     }
 
     @GetMapping("/roles/{id}")
-    public AppRole getRole(@PathVariable("id") String role_id) {
-        return credentialsService.getRole(role_id);
+    public AppRole getRole(@PathVariable("id") String roleId) {
+        return credentialsService.getRole(roleId);
     }
 
     @PostMapping("/roles")
@@ -39,8 +37,8 @@ public class RoleController {
     }
 
     @DeleteMapping("/roles/{id}")
-    public void deleteRole(@PathVariable("id") String role_id) {
-        credentialsService.deleteRole(role_id);
+    public void deleteRole(@PathVariable("id") String roleId) {
+        credentialsService.deleteRole(roleId);
     }
 
 

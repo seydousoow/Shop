@@ -2,18 +2,16 @@ package com.sid.web;
 
 import com.sid.entities.Order;
 import com.sid.service.OrderService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "orders")
+@RequiredArgsConstructor
 public class OrderController {
 
-    private OrderService orderService;
-
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
+    private final OrderService orderService;
 
     @GetMapping
     public Page<Order> getOrders(@RequestParam(value = "page", defaultValue = "0") int page,

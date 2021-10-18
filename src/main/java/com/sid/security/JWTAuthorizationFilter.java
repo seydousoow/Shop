@@ -1,9 +1,16 @@
 package com.sid.security;
 
-import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.io.Encoders;
+import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -13,71 +20,61 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
-public class JWTAuthorizationFilter extends OncePerRequestFilter{
+import static com.sid.security.SecurityParameters.*;
 
-	@Override
-	protected void doFilterInternal (HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		/*
-		 * Domain authorized to send request
-		 * Headers that are allowed to be sent to this domain
-		 * Allows other methods (PUT, Delete)
-		 */
-		setHeaders(response);
+@Log4j2
+public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
-		if (request.getMethod().equals("OPTIONS"))
-			response.setStatus(HttpServletResponse.SC_OK);
-		else 
-			JWTFilter(request, response, filterChain);
+    @Override
+    protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain)
+            throws ServletException, IOException {
+        var authentication = getAuthentication(request);
+        if (authentication == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        filterChain.doFilter(request, response);
+    }
 
-	}
-		
-	private void JWTFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-		/*
-		 * Get the token from the response's header
-		 * and check if the token is not null and if it start with the correct token's prefix
-		 */
-		String token = request.getHeader(SecurityParameters.HEADER);
-		if (token == null || !token.startsWith(SecurityParameters.TOKEN_PREFIX)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
+    private @Nullable UsernamePasswordAuthenticationToken getAuthentication(@NotNull HttpServletRequest request) {
+        var token = request.getHeader(HEADER);
+        if (StringUtils.isNotEmpty(token) && token.startsWith(TOKEN_PREFIX)) {
+            var jwt = token.substring(TOKEN_PREFIX.length());
+            try {
+                var parsedToken = Jwts.parserBuilder()
+                        .setSigningKey(SECRET.getBytes(StandardCharsets.UTF_8))
+                        .build()
+                        .parseClaimsJws(jwt);
 
-		String encodedString = new String(Base64.getEncoder().encode(SecurityParameters.SECRET.getBytes()));
-		Claims claims = Jwts.parser()
-				.setSigningKey(encodedString)
-				.parseClaimsJws(token.substring(SecurityParameters.TOKEN_PREFIX.length()))
-				.getBody();
+                var username = parsedToken.getBody().getSubject();
 
-		String username = claims.getSubject();
-		ArrayList<Map<String, String>> roles;
-		roles = (ArrayList<Map<String, String>>) claims.get(SecurityParameters.CLAIMS_NAME);
-		Collection<GrantedAuthority> authorities = new ArrayList<>();
+                var authorities = ((List<?>) parsedToken.getBody().get(CLAIMS_NAME))
+                        .stream()
+                        .map(Object::toString)
+                        .map(SimpleGrantedAuthority::new)
+                        .toList();
 
-		roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.get("authority"))));
+                if (StringUtils.isNotEmpty(username))
+                    return new UsernamePasswordAuthenticationToken(username, null, authorities);
 
-		/*
-		 * create a spring user with the previous credentials
-		 * set the user as the one that has authenticated in this context
-		 * then do the filter
-		 */
-		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(username, null, authorities);
-		SecurityContextHolder.getContext().setAuthentication(user);
-		filterChain.doFilter(request, response);
-	}
+            } catch (ExpiredJwtException exception) {
+                log.warn("Request to parse expired JWT : {} failed : {}", token, exception.getMessage());
+            } catch (UnsupportedJwtException exception) {
+                log.warn("Request to parse unsupported JWT : {} failed : {}", token, exception.getMessage());
+            } catch (MalformedJwtException exception) {
+                log.warn("Request to parse invalid JWT : {} failed : {}", token, exception.getMessage());
+                exception.printStackTrace();
+            } catch (SignatureException exception) {
+                log.warn("Request to parse JWT with invalid signature : {} failed : {}", token, exception.getMessage());
+            } catch (IllegalArgumentException exception) {
+                log.warn("Request to parse empty or null JWT : {} failed : {}", token, exception.getMessage());
+            }
+        }
+        return null;
+    }
 
-	private void setHeaders(@org.jetbrains.annotations.NotNull HttpServletResponse response) {
-		response.addHeader("Access-Control-Allow-Origin", "*");
-		response.addHeader("Access-Control-Allow-Headers", "Origin, Accept, X-Requested-With, "
-				+ "Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization");
-
-		response.addHeader("Access-Control-Expose-Headers",
-				"Access-Control-Allow-Origin, Access-Control-Allow-Credentials, Authorization");
-		response.addHeader("Access-Control-Allow-Methods", "HEAD, GET, POST, PUT, DELETE, OPTIONS");
-	}
 }

@@ -1,7 +1,10 @@
 package com.sid.entities;
 
+import com.sid.config.auditing.AuditMetadata;
+import com.sid.dto.ItemSizeDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.annotation.Id;
@@ -15,11 +18,12 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Document
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Item {
+public class Item extends AuditMetadata {
 
     @Id
     private String idItem;
@@ -39,5 +43,5 @@ public class Item {
     private String image;
     private int quantity;
 
-    private List<ItemSize> sizes = new ArrayList<>();
+    private List<ItemSizeDto> sizes = new ArrayList<>();
 }

@@ -1,35 +1,31 @@
 package com.sid.security;
 
-import com.sid.entities.AppUser;
-import com.sid.service.CredentialsService;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.sid.dto.CustomUserDetails;
+import com.sid.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 @Service
+@RequiredArgsConstructor
+@Log4j2
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final CredentialsService credentialsService;
-
-    public UserDetailsServiceImpl(CredentialsService credentialsService) {
-        this.credentialsService = credentialsService;
-    }
+    private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser user = credentialsService.findByUsername(username);
-        if(user == null)
-            throw new UsernameNotFoundException(username);
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
-
-        return new User(user.getUsername(), user.getPassword(), authorities);
+    public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsernameEquals(username)
+                .map(x -> {
+                    var user = new CustomUserDetails(x);
+                    if (!user.isEnabled()) {
+                        log.error("Locked account");
+                        throw new DisabledException("Your account has been disabled! Please contact your administrator!");
+                    }
+                    return user;
+                }).orElseThrow(() -> new UsernameNotFoundException(username));
     }
 }

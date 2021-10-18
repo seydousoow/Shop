@@ -2,6 +2,7 @@ package com.sid.web;
 
 import com.sid.entities.AppUser;
 import com.sid.service.CredentialsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,12 +10,9 @@ import java.util.Base64;
 
 @RestController
 @RequestMapping(value = "/users")
+@RequiredArgsConstructor
 public class UserController {
     private final CredentialsService credentialsService;
-
-    public UserController(CredentialsService credentialsService) {
-        this.credentialsService = credentialsService;
-    }
 
     @GetMapping
     public Page<AppUser> getUsers(@RequestParam(name = "page", defaultValue = "0") int page,

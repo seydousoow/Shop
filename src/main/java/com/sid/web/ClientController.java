@@ -2,6 +2,7 @@ package com.sid.web;
 
 import com.sid.entities.Client;
 import com.sid.service.ClientService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -9,20 +10,16 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/clients")
+@RequiredArgsConstructor
 public class ClientController {
 
-    private ClientService clientService;
-
-    public ClientController(ClientService clientService) {
-        this.clientService = clientService;
-    }
+    private final ClientService clientService;
 
     @GetMapping
     public Page<Client> getClients(@RequestParam(value = "page", defaultValue = "0") int page,
                                    @RequestParam(value = "size", defaultValue = "10") int size,
                                    @RequestParam(value = "direction", defaultValue = "ASC") String direction) {
-        return clientService.getClients(PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction.toUpperCase()),
-                "lastName", "firstName")));
+        return clientService.getClients(PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction.toUpperCase()), "lastName", "firstName")));
     }
 
     @GetMapping(value = "/{code}")
