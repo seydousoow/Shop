@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ItemSizeDto {
     private String size;
-    private int quantity;
+
+    private int quantity = 0;
 }

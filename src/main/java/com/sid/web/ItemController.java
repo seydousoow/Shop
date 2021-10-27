@@ -1,74 +1,87 @@
 package com.sid.web;
 
+import com.sid.dto.ItemFiltersDto;
+import com.sid.dto.ItemSizeDto;
 import com.sid.entities.Item;
+import com.sid.exception.RestException;
 import com.sid.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @RestController
+@RequestMapping("/items")
 @RequiredArgsConstructor
 public class ItemController {
 
     private final ItemService itemService;
 
-    /*
-     * Get all items or items that belong to a selected list of brands
-     */
+    @GetMapping(value = "/{category}")
+    public ResponseEntity<Page<Item>> getItems(@PathVariable String category,
+                                               @RequestParam(required = false) List<String> brands,
+                                               @RequestParam(required = false) List<String> sizes,
+                                               @RequestParam(required = false, defaultValue = "0") int page,
+                                               @RequestParam(required = false, defaultValue = "24") int size,
+                                               @RequestParam(required = false, defaultValue = "addedAt") String sort,
+                                               @RequestParam(required = false, defaultValue = "DESC") String direction) {
+        if (isBlank(category)) throw new RestException("Please select the category of the products you want to view.");
 
-    private static Pageable setPagination(int page, int size, String sortBy, String direction) {
-        Sort.Direction dir = Sort.Direction.fromString(direction.toUpperCase());
-        Sort sort = Sort.by(dir, sortBy);
-        return PageRequest.of(page, size, sort);
+        var cat = category.toLowerCase();
+        var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction.toUpperCase()), sort));
+        return ResponseEntity.ok(itemService.getItems(cat, brands, sizes, pageable));
     }
 
-    @GetMapping(value = "/items/{category}")
-    public Page<Item> getItems(@PathVariable String category,
-                               @RequestParam(name = "brands") List<String> brands,
-                               @RequestParam(value = "page", defaultValue = "0") int page,
-                               @RequestParam(value = "size", defaultValue = "24") int size,
-                               @RequestParam(value = "sort", defaultValue = "addedAt") String sortBy,
-                               @RequestParam(value = "direction", defaultValue = "DESC") String direction) {
-        category = category.substring(0, 1).toUpperCase() + category.substring(1);
-
-        return brands.isEmpty() ? itemService.getItems(category, setPagination(page, size, sortBy, direction))
-                : itemService.getItemsByBrand(category, brands, setPagination(page, size, sortBy, direction));
+    @GetMapping(value = "/{category}/filters")
+    public ResponseEntity<ItemFiltersDto> getItemsFilters(@PathVariable String category) {
+        if (isBlank(category)) throw new RestException("Please select the category of the products you want to view.");
+        return ResponseEntity.ok(itemService.getItemsFilters(category.toLowerCase()));
     }
 
-    /*
-     * Get one item that has the code attached to the path variable code
-     */
-    @GetMapping(value = "/items/{category}/{code}")
-    public Item getItem(@PathVariable String category,
-                        @PathVariable String code) {
-        return itemService.getItem(code);
+    @GetMapping("/details")
+    public Item getItem(@RequestParam String code) {
+        return itemService.getItemByCode(code);
     }
 
-    /*
-     * Get all brands list of a category
-     */
-    @GetMapping(value = "/items/{category}/brand")
+    @GetMapping(value = "/brands/{category}")
     public List<String> getAllBrands(@PathVariable String category) {
-        category = category.substring(0, 1).toUpperCase() + category.substring(1);
-        return itemService.getAllBrands(category);
+        if (isBlank(category)) throw new RestException("Please select the category of the brands you want to view.");
+        return itemService.getAllBrands(category.toLowerCase());
     }
 
-    @PostMapping("/items")
+    @PostMapping
     public Item addItem(@RequestBody Item item) {
         return itemService.add(item);
     }
 
-    @PutMapping("/items")
+    @PutMapping
     public Item updateItem(@RequestBody Item item) {
         return itemService.update(item);
     }
 
-    @DeleteMapping("/items/{id}")
+    @PostMapping("/{id}/sizes")
+    public ResponseEntity<Collection<ItemSizeDto>> addSizeToItem(@PathVariable("id") String itemId, @RequestBody ItemSizeDto size) {
+        return ResponseEntity.ok(itemService.addSizesToItem(itemId, size));
+    }
+
+    @PutMapping("/{id}/sizes")
+    public ResponseEntity<Collection<ItemSizeDto>> updateItemSizes(@PathVariable("id") String itemId, @RequestBody Collection<ItemSizeDto> sizes) {
+        return ResponseEntity.ok(itemService.updateSizes(itemId, sizes));
+    }
+
+    @DeleteMapping("/{id}/sizes")
+    public ResponseEntity<Collection<ItemSizeDto>> removeSizeFromItem(@PathVariable("id") String itemId, @RequestParam String size) {
+        return ResponseEntity.ok(itemService.deleteSize(itemId, size));
+    }
+
+    @DeleteMapping("/{id}")
     public void deleteItem(@PathVariable("id") String id) {
         itemService.delete(id);
     }

@@ -18,8 +18,14 @@ public class Image {
     @Id
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String _id;
+
     @Indexed(unique = true)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String code;
+    private String name;
+
+    private String type;
+
     private String base64Image;
+
+    private byte[] picByte;
+
 }

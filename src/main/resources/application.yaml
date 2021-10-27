@@ -30,5 +30,15 @@ server:
 
 logging:
   level:
+    org:
+      springframework:
+#        security: DEBUG
+        data:
+          mongodb:
+            repository:
+              query: DEBUG
+            core:
+              MongoTemplate: DEBUG
     root: INFO
-#    org.springframework: TRACE
+#    com:
+#      amazonaws: info

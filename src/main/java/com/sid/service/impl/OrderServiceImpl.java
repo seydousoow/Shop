@@ -65,14 +65,12 @@ public class OrderServiceImpl implements OrderService {
          * update all the products of the order
          */
         order.getListItem().forEach(arg -> {
-            Item item = itemService.getItem(arg.getCode());
-            if (item.getSizes() != null) {
+            Item item = itemService.getItemByCode(arg.getCode());
+            if (!item.getSizes().isEmpty()) {
                 item.getSizes().forEach(size -> {
-                    if (size.getSize().equals(arg.getSize()))
-                        size.setQuantity(size.getQuantity() - parseInt(arg.getQuantity()));
+                    if (size.getSize().equals(arg.getSize())) size.setQuantity(size.getQuantity() - parseInt(arg.getQuantity()));
                 });
-            } else
-                item.setQuantity(item.getQuantity() - parseInt(arg.getQuantity()));
+            } else item.setQuantity(item.getQuantity() - parseInt(arg.getQuantity()));
             itemService.update(item);
         });
         return order;

@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,7 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 @EqualsAndHashCode(callSuper = true)
 @Document
@@ -39,9 +38,9 @@ public class Item extends AuditMetadata {
     private double buyingPrice;
     private double sellingPrice;
     private String description;
-    @Transient
-    private String image;
+
+    private String picture;
     private int quantity;
 
-    private List<ItemSizeDto> sizes = new ArrayList<>();
+    private Collection<ItemSizeDto> sizes = new ArrayList<>();
 }

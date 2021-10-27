@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -27,7 +28,7 @@ import static org.springframework.http.HttpMethod.*;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @RequiredArgsConstructor
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserDetailsServiceImpl userDetailsService;
@@ -46,7 +47,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers(POST,"/login/**").permitAll()
+                .antMatchers( "/images/by-name").permitAll()
+                .antMatchers(POST, "/login/**").permitAll()
                 .antMatchers(OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
